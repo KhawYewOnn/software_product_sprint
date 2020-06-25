@@ -6,16 +6,23 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="getComment()">
     <div id="content">
       <h1>My Portfolio</h1>
       <p>This is my portfolio.</p>
       <p>Click here to get a random message:</p>
       <button onclick="addRandomGreeting()">Hello</button>
       <div id="greeting-container"></div>
-      <button onclick="getHelloYewOnnUsingArrowFunctions()">HelloYewOnn</button>
-      <div id="hello-container"></div>
-      <button onclick="getArrayJson()">JsonButton</button>
+      <br/><br/>
+      
+      <form action="/data" method="POST">
+
+        <p>Type a comment:</p>
+        <textarea name="text-input">Hi</textarea>
+        <br/><br/>
+  
+        <input type="submit" />
+      </form>
       <ul id="comment-container"></ul>
     </div>
   </body>
