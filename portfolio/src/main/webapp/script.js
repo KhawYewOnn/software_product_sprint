@@ -28,3 +28,9 @@ function addRandomGreeting() {
 	
   greetingContainer.innerText = greeting;
 }
+
+function getHelloYewOnnUsingArrowFunctions() {
+  fetch('/data').then(response => response.text()).then((quote) => {
+    document.getElementById('hello-container').innerText = quote;
+  });
+}
