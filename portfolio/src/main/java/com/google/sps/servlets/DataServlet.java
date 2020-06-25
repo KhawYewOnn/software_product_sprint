@@ -14,6 +14,12 @@
 
 package com.google.sps.servlets;
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.*;
 import java.util.ArrayList;
 import java.io.IOException;
@@ -32,21 +38,35 @@ public class DataServlet extends HttpServlet {
   public void init() {
     messages = new ArrayList<>();
   }
-  
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("comment").addSort("timestamp", SortDirection.DESCENDING);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    messages = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      String message = (String) entity.getProperty("message");
+      messages.add(message);
+    }
+
     response.setContentType("application/json");
     String json = new Gson().toJson(messages);
-    System.out.println("json = " + json);
     response.getWriter().println(json);
   }
   
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
-    String text = getParameter(request, "text-input", "");
-    System.out.println("text = " + text);
-    messages.add(text);
+    String message = getParameter(request, "text-input", "");
+    Entity commentEntity = new Entity("comment");
+    commentEntity.setProperty("message", message);
+    long timestamp = System.currentTimeMillis();
+    commentEntity.setProperty("timestamp", timestamp);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
     response.sendRedirect("/index.html");
   }
 
