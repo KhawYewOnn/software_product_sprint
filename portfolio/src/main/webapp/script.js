@@ -17,15 +17,15 @@
  */
 function addRandomGreeting() {
   const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!',
-			'Quote1', 'Quote2', 'Quote3'];
+    ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!',
+      'Quote1', 'Quote2', 'Quote3'];
 
   // Pick a random greeting.
   const greeting = greetings[Math.floor(Math.random() * greetings.length)];
 
   // Add it to the page.
   const greetingContainer = document.getElementById('greeting-container');
-	
+
   greetingContainer.innerText = greeting;
 }
 
@@ -33,17 +33,58 @@ function addRandomGreeting() {
  * Fetches stats from the servers and adds them to the DOM.
  */
 function getComment() {
-  fetch('/data').then(response => response.json()).then((stats) => {
-    // stats is an object, not a string, so we have to
-    // reference its fields to create HTML content
+  const statsListElement = document.getElementById('comment-container');
+  statsListElement.innerHTML = '';
+  var toStop = true;
+  var userEmail = "";
+  fetch('/login').then(response => response.json()).then((loginInfo) => {
+    /*var i;
+    for (i = 0; i < loginInfo.length; i++) {
+      statsListElement.appendChild(createListElement(loginInfo[i]));
+    } */
+    if (loginInfo.length == 1) {
+      console.log("loginInfo.length == 1");
+      var form = document.getElementById("form-container")
+      var parent = document.getElementById("content");
+      var para = document.createElement("p");
+      var loginLink = loginInfo[0];
+      var a = document.createElement('a');
+      a.href = loginLink;
+      a.title = loginLink;
+      a.appendChild(document.createTextNode("here"));
+      para.appendChild(document.createTextNode("Login "));
+      para.appendChild(a);
+      parent.replaceChild(para, form);
+    } else {
+      console.log("loginInfo.length != 1");
+      userEmail = loginInfo[0];
 
-    const statsListElement = document.getElementById('comment-container');
-    statsListElement.innerHTML = '';
-    var i;
-    for (i = 0; i < stats.length; i++) {
-      statsListElement.appendChild(createListElement(stats[i]));
-    } 
-  });
+      // creating the logout link
+      var logoutLink = loginInfo[1];
+      var a = document.createElement('a');
+      a.href = logoutLink;
+      a.title = logoutLink;
+      a.appendChild(document.createTextNode("here"));
+      var para = document.createElement("p");
+      para.appendChild(document.createTextNode("Logout "));
+      para.appendChild(a);
+      var parent = document.getElementById("content");
+      parent.appendChild(para);
+
+      fetch('/data').then(response => response.json()).then((stats) => {
+        // stats is an object, not a string, so we have to
+        // reference its fields to create HTML content
+
+        // stats should be empty if user is not logged in
+        var i;
+        for (i = 0; i < stats.length; i++) {
+          statsListElement.appendChild(createListElement(stats[i]));
+        }
+      });
+      console.log("end of getComment()");
+    }
+
+  })
 }
 
 function createListElement(text) {
