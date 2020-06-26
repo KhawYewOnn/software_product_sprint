@@ -20,6 +20,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import java.io.*;
 import java.util.ArrayList;
 import java.io.IOException;
@@ -48,7 +50,9 @@ public class DataServlet extends HttpServlet {
 
     messages = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
-      String message = (String) entity.getProperty("message");
+      String message = (String) entity.getProperty("email");
+      String message2 = (String) entity.getProperty("message");
+      message = message + " said " + message2;
       messages.add(message);
     }
 
@@ -65,6 +69,10 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("message", message);
     long timestamp = System.currentTimeMillis();
     commentEntity.setProperty("timestamp", timestamp);
+    UserService userService = UserServiceFactory.getUserService();
+    // will fail if user is not logged in
+    String email = userService.getCurrentUser().getEmail();
+    commentEntity.setProperty("email", email);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
     response.sendRedirect("/index.html");
