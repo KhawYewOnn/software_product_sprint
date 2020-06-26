@@ -120,25 +120,14 @@ public final class FindMeetingQuery {
     }
     return filtered;
   }
-  public void printer(ArrayList<TimeRange> times, String message) {
-    System.out.println("printing for " + message);
-    for (int i = 0; i < times.size(); i++) {
-      System.out.println(i + " : " + times.get(i).start() + ", " + times.get(i).end());
-    }
-    System.out.println("done printing for " + message);
-  }
+
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     HashSet<String> attendees = new HashSet<String>();
     attendees.addAll(request.getAttendees());
     ArrayList<TimeRange> filteredTimes = filterTimes(events, attendees);
-    printer(filteredTimes, "filtered times");
     ArrayList<TimeRange> mergedTimes = mergeTimes(filteredTimes);
-    printer(mergedTimes, "merged times");
     ArrayList<TimeRange> freeTimes = getExcludedTimes(mergedTimes);
-    printer(freeTimes, "freeTimes");
     ArrayList<TimeRange> filteredDuration = filterDuration(freeTimes, request.getDuration());
-    printer(filteredDuration, "filtered duration");
-    System.out.println("request.getDuration = " + request.getDuration());
     return filteredDuration;
   }
 }
