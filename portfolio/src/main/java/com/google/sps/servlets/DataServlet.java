@@ -43,7 +43,7 @@ public class DataServlet extends HttpServlet {
 
     messages = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
-      String message = (String) entity.getProperty("message");
+      String message = convertEntityToMessage(entity);
       messages.add(message);
     }
     String json = gson.toJson(messages);
@@ -74,5 +74,9 @@ public class DataServlet extends HttpServlet {
       return defaultValue;
     }
     return value;
+  }
+
+  private String convertEntityToMessage(Entity entity) {
+    return (String) entity.getProperty("message");
   }
 }
