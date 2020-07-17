@@ -14,6 +14,7 @@
 
 package com.google.sps.servlets;
 import com.google.gson.Gson;
+import com.google.sps.servlets.Constants;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -22,7 +23,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import java.io.*;
 import java.util.ArrayList;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -30,10 +30,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+  Gson gson = new Gson();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -45,13 +44,13 @@ public class DataServlet extends HttpServlet {
     ArrayList<String> messages = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
       String email = (String) entity.getProperty("email");
-      String message = (String) entity.getProperty("message");
+      String message = convertEntityToMessage(entity);
       String  = email + " said " + message;
       messages.add(message);
     }
 
-    response.setContentType("application/json");
-    String json = new Gson().toJson(messages);
+    response.setContentType(Constants.CONTENT_TYPE);
+    String json = gson.toJson(messages);
     response.getWriter().println(json);
   }
   
@@ -68,7 +67,7 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("email", email);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
-    response.sendRedirect("/index.html");
+    response.sendRedirect(Constants.MAIN_PAGE);
   }
 
   /**
@@ -81,5 +80,9 @@ public class DataServlet extends HttpServlet {
       return defaultValue;
     }
     return value;
+  }
+
+  private String convertEntityToMessage(Entity entity) {
+    return (String) entity.getProperty("message");
   }
 }

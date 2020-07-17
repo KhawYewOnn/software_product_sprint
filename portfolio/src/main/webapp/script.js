@@ -70,12 +70,10 @@ function getComment() {
         // reference its fields to create HTML content
 
         // stats should be empty if user is not logged in
-        var i;
-        for (i = 0; i < stats.length; i++) {
+        for (var i = 0; i < stats.length; i++) {
           statsListElement.appendChild(createListElement(stats[i]));
         }
       });
-      console.log("end of getComment()");
     }
 
   })
