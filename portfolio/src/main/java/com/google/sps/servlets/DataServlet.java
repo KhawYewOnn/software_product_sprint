@@ -17,14 +17,13 @@ import com.google.gson.Gson;
 import com.google.sps.servlets.Constants;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
-@WebServlet("/data")
+/** Servlet that returns some example content. TODO: modify this file to handle comments data */ @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   Gson gson = new Gson();
   private ArrayList<String> messages = new ArrayList<>();
@@ -41,7 +40,7 @@ public class DataServlet extends HttpServlet {
     // Get the input from the form.
     String text = getParameter(request, "text-input", "");
     messages.add(text);
-    response.sendRedirect("/index.html");
+    response.sendRedirect(Constants.MAIN_PAGE);
   }
 
   /**
