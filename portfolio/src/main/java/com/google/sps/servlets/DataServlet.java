@@ -34,12 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private ArrayList<String> messages;
-  
-  @Override
-  public void init() {
-    messages = new ArrayList<>();
-  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -48,11 +42,11 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    messages = new ArrayList<>();
+    ArrayList<String> messages = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
-      String message = (String) entity.getProperty("email");
-      String message2 = (String) entity.getProperty("message");
-      message = message + " said " + message2;
+      String email = (String) entity.getProperty("email");
+      String message = (String) entity.getProperty("message");
+      String  = email + " said " + message;
       messages.add(message);
     }
 
@@ -70,7 +64,6 @@ public class DataServlet extends HttpServlet {
     long timestamp = System.currentTimeMillis();
     commentEntity.setProperty("timestamp", timestamp);
     UserService userService = UserServiceFactory.getUserService();
-    // will fail if user is not logged in
     String email = userService.getCurrentUser().getEmail();
     commentEntity.setProperty("email", email);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

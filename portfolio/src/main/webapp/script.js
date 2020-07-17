@@ -38,12 +38,7 @@ function getComment() {
   var toStop = true;
   var userEmail = "";
   fetch('/login').then(response => response.json()).then((loginInfo) => {
-    /*var i;
-    for (i = 0; i < loginInfo.length; i++) {
-      statsListElement.appendChild(createListElement(loginInfo[i]));
-    } */
     if (loginInfo.length == 1) {
-      console.log("loginInfo.length == 1");
       var form = document.getElementById("form-container")
       var parent = document.getElementById("content");
       var para = document.createElement("p");
@@ -56,7 +51,6 @@ function getComment() {
       para.appendChild(a);
       parent.replaceChild(para, form);
     } else {
-      console.log("loginInfo.length != 1");
       userEmail = loginInfo[0];
 
       // creating the logout link
