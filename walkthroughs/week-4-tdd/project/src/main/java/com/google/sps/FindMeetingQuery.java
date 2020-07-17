@@ -14,21 +14,20 @@
 
 package com.google.sps;
 
-import java.util.*;
-
-/*
-public final class FindMeetingQuery {
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    throw new UnsupportedOperationException("TODO: Implement this method.");
-  }
-}*/
-
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public final class FindMeetingQuery {
-  public boolean hasMatch(HashSet<String> first, HashSet<String> second) {
-    Iterator<String> it = first.iterator();
+  /**
+  Check if any of the string that appear in stringSet appear in otherSet
+   */
+  public boolean hasMatch(HashSet<String> stringSet, HashSet<String> otherSet) {
+    Iterator<String> it = stringSet.iterator();
     while(it.hasNext()){
-      if (second.contains(it.next())) {
+      if (otherSet.contains(it.next())) {
         return true;
       }
     }
@@ -38,9 +37,9 @@ public final class FindMeetingQuery {
   public ArrayList<TimeRange> filterTimes(Collection<Event> events, HashSet<String> attendees) {
     ArrayList<TimeRange> times = new ArrayList<TimeRange>();
     for (Event event: events) {
-      HashSet<String> curr_attendees = new HashSet<String>();
-      curr_attendees.addAll(event.getAttendees());
-      if (hasMatch(curr_attendees, attendees)) {
+      HashSet<String> currAttendees = new HashSet<String>();
+      currAttendees.addAll(event.getAttendees());
+      if (hasMatch(currAttendees, attendees)) {
         if(event.getWhen().duration() == 0) {
           continue;
         }
