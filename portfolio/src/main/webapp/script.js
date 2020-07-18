@@ -34,3 +34,25 @@ function getHelloYewOnnUsingArrowFunctions() {
     document.getElementById('hello-container').innerText = quote;
   });
 }
+
+/**
+ * Fetches stats from the servers and adds them to the DOM.
+ */
+function getArrayJson() {
+  fetch('/data').then(response => response.json()).then((stats) => {
+    // stats is an object, not a string, so we have to
+    // reference its fields to create HTML content
+
+    const statsListElement = document.getElementById('comment-container');
+    statsListElement.innerHTML = '';
+    for (var i = 0; i < stats.length; i++) {
+      statsListElement.appendChild(createListElement(stats[i]));
+    } 
+  });
+}
+
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
+}
