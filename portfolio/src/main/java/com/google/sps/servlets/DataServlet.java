@@ -21,6 +21,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import java.util.ArrayList;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -31,8 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   Gson gson = new Gson();
-  private ArrayList<String> messages = new ArrayList<>();
-  
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("comment").addSort("timestamp", SortDirection.DESCENDING);
@@ -40,13 +41,16 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    messages = new ArrayList<>();
+    ArrayList<String> messages = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
+      String email = convertEntityToEmail(entity);
       String message = convertEntityToMessage(entity);
+      message = email + " said " + message;
       messages.add(message);
     }
+
+    response.setContentType(Constants.JSON_CONTENT_TYPE);
     String json = gson.toJson(messages);
-    response.setContentType(Constants.CONTENT_TYPE);
     response.getWriter().println(json);
   }
   
@@ -58,6 +62,9 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("message", message);
     long timestamp = System.currentTimeMillis();
     commentEntity.setProperty("timestamp", timestamp);
+    UserService userService = UserServiceFactory.getUserService();
+    String email = userService.getCurrentUser().getEmail();
+    commentEntity.setProperty("email", email);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
     response.sendRedirect(Constants.MAIN_PAGE);
@@ -77,5 +84,9 @@ public class DataServlet extends HttpServlet {
 
   private String convertEntityToMessage(Entity entity) {
     return (String) entity.getProperty("message");
+  }
+
+  private String convertEntityToEmail(Entity entity) {
+    return (String) entity.getProperty("email");
   }
 }
